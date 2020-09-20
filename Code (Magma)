@@ -1,0 +1,39 @@
+\\ This code is written in magma.
+
+S := function(p, m); \\ This function checks whether a prime p is split in the quadratic field K := Q(root(m));
+  K := QuadraticField(m);
+  D := Discriminant(K);
+    if (D mod p ne 0 and LegendreSymbol(D, p) eq 1) then
+      return true;
+    else
+      return false;
+    end if;
+end function;
+
+C := function(p, m); \\ This function checks how many roots of the minimal polynomial of the fundamental unit are squares modulo p.
+  c := 0;
+  K := QuadraticField(m);
+  u := FundamentalUnit(K);
+  f := MinimalPolynomial(u, Rationals());
+  F := GF(p); \\ Finite field of order p.
+  S := [KroneckerSymbol(x[1]) : x in Roots(f, F)];
+    for i := 1 to #S do
+      if (S[i] eq 1) then
+        c := c+1;
+      end if;
+    end for;
+  return c;
+end function;
+
+R := function(p, m); \\This function counts how many distinct roots that the minimal polynomial of the fundamental unit has modulo p.
+  K := QuadraticField(m);
+  u := FundamentalUnit(K);
+  f := MinimalPolynomial(u, Rationals());
+  F := GF(p); 
+  return #Roots(f, F);
+  end function;
+  
+ 
+  
+  
+
