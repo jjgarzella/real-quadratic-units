@@ -1,32 +1,53 @@
-\\ This code is written in magma.
-\\   Authors: David Luo, Jack J. Garzella
+// This code is written in magma.
+//   Authors: David Luo, Jack J. Garzella
 
-S := function(p, m); \\ This function checks whether a prime p is split in the quadratic field K := Q(root(m));
-  K := QuadraticField(m);
-  D := Discriminant(K);
-    if (D mod p ne 0 and LegendreSymbol(D, p) eq 1) then
-      return true;
-    else
-      return false;
-    end if;
+FundamentalUnitNorm1 := function(K);
+  u := FundamentalUnit(K);
+  if (Norm(u) eq -1) then
+    return u^2;
+  else
+    return u;
+  end if;
 end function;
 
-C := function(p, m); \\ This function checks how many roots of the minimal polynomial of the fundamental unit are squares modulo p.
+IntFundamentalUnit := function(K);
+  O := EquationOrder(K); // if d = 2,3 mod 4, this is just the maximal order, otherwise it has conductor 2. 
+  u := FundamentalUnit(O);
+  return u;
+end function;
+
+IntFundamentalUnitNorm1 := function(K);
+  u := FundamentalUnitIntegerCoefs(K);
+  if (Norm(u) eq -1) then
+    return u^2;
+  else
+    return u;
+  end if;
+end function;
+
+S := function(p, K); // This function checks whether a prime p is split in the quadratic field K := Q(root(m));
+  D := Discriminant(K);
+  if (D mod p ne 0 and LegendreSymbol(D, p) eq 1) then
+    return true;
+  else
+    return false;
+  end if;
+end function;
+
+// Maybe we should make this a function of u instead of m?
+C := function(p, f); // This function checks how many roots of the minimal polynomial of the fundamental unit are squares modulo p.
   c := 0;
-  K := QuadraticField(m);
-  u := FundamentalUnit(K);
-  f := MinimalPolynomial(u, Rationals());
-  F := GF(p); \\ Finite field of order p.
+  F := GF(p); // Finite field of order p.
   S := [KroneckerSymbol(x[1]) : x in Roots(f, F)];
-    for i := 1 to #S do
-      if (S[i] eq 1) then
-        c := c+1;
-      end if;
-    end for;
+  for i := 1 to #S do
+    if (S[i] eq 1) then
+      c := c+1;
+    end if;
+  end for;
   return c;
 end function;
 
-R := function(p, m); \\This function counts how many distinct roots that the minimal polynomial of the fundamental unit has modulo p.
+R := function(p, m); //This function counts how many distinct roots that the minimal polynomial of the fundamental unit has modulo p.
   K := QuadraticField(m);
   u := FundamentalUnit(K);
   f := MinimalPolynomial(u, Rationals());
@@ -34,7 +55,29 @@ R := function(p, m); \\This function counts how many distinct roots that the min
   return #Roots(f, F);
   end function;
   
- 
-  
-  
+CheckField := function(m, N);
+  //Compute as much as we can here, instead of in the loop
+  K := QuadraticField(m);
+  u := FundamentalUnit(K);
+  f := MinimalPolynomial(u, Rationals());
 
+  p := 2;
+  // This keeps track of how many primes have 0, 1, or 2 roots
+  // In general, the formula numPrimes[i+1] gives you how many primes have i roots
+  numPrimes := [* 0,0,0 *];
+  while p lt N do
+    if S(p,K) then
+      numSq := C(p,f);
+      numPrimes[numSq + 1] +:= 1;
+    end if; 
+    p := NextPrime(p);
+  end while;
+  return numPrimes;
+end function;
+
+Main := function(M,N);
+  // Loop through squarefree numbers from 1 to M
+  // Inside the loop call CheckField(M,N)
+  // save all of the results
+  return 0;
+end function;
