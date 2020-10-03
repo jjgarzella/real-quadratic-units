@@ -1,4 +1,5 @@
 \\ This code is written in magma.
+\\   Authors: David Luo, Jack J. Garzella
 
 S := function(p, m); \\ This function checks whether a prime p is split in the quadratic field K := Q(root(m));
   K := QuadraticField(m);
