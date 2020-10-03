@@ -1,8 +1,17 @@
 // This code is written in magma.
 //   Authors: David Luo, Jack J. Garzella
 
-FundamentalUnitNorm1 := function(K);
+// Enforce that the trace of the fundamental unit is positive
+FundamentalUnitTracePos := function(K) // works with a quadratic field K or an order O
   u := FundamentalUnit(K);
+  if Trace(u) lt 0 then
+    u := -u;
+  end if;
+  return u;
+end function;
+
+FundamentalUnitNorm1 := function(K);
+  u := FundamentalUnitTracePos(K);
   if (Norm(u) eq -1) then
     return u^2;
   else
@@ -12,7 +21,7 @@ end function;
 
 IntFundamentalUnit := function(K);
   O := EquationOrder(K); // if d = 2,3 mod 4, this is just the maximal order, otherwise it has conductor 2. 
-  u := FundamentalUnit(O);
+  u := FundamentalUnitTracePos(O);
   return u;
 end function;
 
@@ -58,7 +67,7 @@ R := function(p, m); //This function counts how many distinct roots that the min
 CheckField := function(m, N);
   //Compute as much as we can here, instead of in the loop
   K := QuadraticField(m);
-  u := FundamentalUnit(K);
+  u := FundamentalUnitTracePos(K);
   f := MinimalPolynomial(u, Rationals());
 
   p := 2;
