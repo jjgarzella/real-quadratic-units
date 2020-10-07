@@ -43,7 +43,6 @@ S := function(p, K); // This function checks whether a prime p is split in the q
   end if;
 end function;
 
-// Maybe we should make this a function of u instead of m?
 C := function(p, f); // This function checks how many roots of the minimal polynomial of the fundamental unit are squares modulo p.
   c := 0;
   F := GF(p); // Finite field of order p.
@@ -56,16 +55,14 @@ C := function(p, f); // This function checks how many roots of the minimal polyn
   return c;
 end function;
 
-R := function(p, m); //This function counts how many distinct roots that the minimal polynomial of the fundamental unit has modulo p.
-  K := QuadraticField(m);
-  u := FundamentalUnit(K);
-  f := MinimalPolynomial(u, Rationals());
+R := function(p, f); //This function counts how many distinct roots that the minimal polynomial of the fundamental unit has modulo p.
   F := GF(p); 
   return #Roots(f, F);
 end function;
   
 CheckField := function(m, N);
   //Compute as much as we can here, instead of in the loop
+  // This will speed up the computation by not doing this work repeatedly
   K := QuadraticField(m);
   u := FundamentalUnitTracePos(K);
   f := MinimalPolynomial(u, Rationals());
@@ -79,6 +76,8 @@ CheckField := function(m, N);
   while p lt N do
     if S(p,K) then
       numSq := C(p,f);
+      numDistinct := R(p,f);
+      //FIXME: doesn't look at multiplicity
       if numSq eq 0 then
         x := x + 1;
       elif numSq eq 1 then
